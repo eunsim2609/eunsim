@@ -12,6 +12,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Indie+Flower&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <style>
         body {
             font-family: 'Gamja Flower', cursive;
@@ -58,9 +71,9 @@
         input {
             margin-top: 20px;
         }
-        
-        #usd{
-            color:blue;
+
+        #usd {
+            color: blue;
         }
     </style>
 </head>
@@ -85,7 +98,7 @@
         <p><strong>관리:</strong> 너무 지나치게 뻗은 가지는 잘라주고, 적당량의 햇빛을 받을 수 있는 곳에 둬야하며 겉흙이 완전히 말랐을 때 충분한 물을 줍니다.</p>
     </div>
     <div>
-        <p id="usd" onclick="usd()">환율정보</p>
+        <h4 id="usd"> </h4>
     </div>
     <div id="input">
         <div class="input-group mb-3">
@@ -119,70 +132,57 @@
         <button type="button" class="btn btn-warning" onclick="order_box()">주문하기</button>
     </div>
     <script>
-        let user_name = $('#user-name').val();
-        let item_num = $('#item-num').val();
-        let user_addr = $('#user-addr').val();
-        let user_tel = $('#user-tel').val();
 
-        function order_box(user_name, item_num, user_addr, user_tel) {
-            let order_check = confirm('주문자 이름:' + user_name + '\n' +
-                '수량:' + item_num + '\n' +
-                '주소:' + user_addr + '\n' +
-                '전화번호:' + user_tel);
-            if (order_check) {
-                alert('주문이 완료되었습니다.');
-            }
-            else if (user_name == '') {
-                alert('이름을 입력해주세요!');
-            }
-            else if (item_num == '') {
-                alert('수량을 입력해주세요!');
-            }
-            else if (user_addr == '') {
-                alert('주소를 입력해주세요!');
-            }
-            else if (user_tel == '') {
-                alert('번호를 입력해주세요!');
-            }
-        }
-        $(document).ready(function usd() {
-             $('#usd').empty();
+        $(document).ready(function () {
             $.ajax({
                 type: "GET",
                 url: "https://api.manana.kr/exchange/rate.json",
                 data: {},
-                success: function (respons) {
-                    let rows = respons[1]['rate'];
-                    let usd_code = `<p>달러+&#183;+원 환율:${rows}</p>`;
-                    $('#usd').append(usd_code);
+                success: function (response) {
+                    let usd_code = response[1]["rate"];
+                    let usd = `달러.원 환율:${usd_code}`
+                    $('#usd').text(usd);
                 }
-
             })
         });
 
+        
+            
+        function order_box(){
+        let name = $('#user-name').val();
+        let num = $('#item-num').val();
+        let addr = $('#user-addr').val();
+        let tel = $('#user-tel').val();
        
+        if(name == ''){
+            alert('이름을 입력해주세요!');
+        }
+        else if(num == ''){
+            alert('수량을 입력해주세요!');
+        }
+        else if(addr == ''){
+            alert('주소를 입력해주세요!');
+        }
+        else if(tel == ''){
+            alert('번호를 입력해주세요!');
+        }
+        else {
+            confirm(`이름: ${name}\n수량: ${num}\n주소: ${addr}\n번호: ${tel}`);
+            alert('주문이 완료되었습니다!');                   
+        }
+        }
 
         function open_img() {
-                if ($('#openimg').css('display') == 'none') {
-                    $('#button').text('이미지 닫기');
-                    $('#openimg').show();
-                }
-                else {
-                    $('#button').text('이미지 열기');
-                    $('#openimg').hide();
-                }
+            if ($('#openimg').css('display') == 'none') {
+                $('#button').text('이미지 닫기');
+                $('#openimg').show();
             }
-
+            else {
+                $('#button').text('이미지 열기');
+                $('#openimg').hide();
+            }
+        }
     </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-        crossorigin="anonymous"></script>
 </body>
 
 </html>
