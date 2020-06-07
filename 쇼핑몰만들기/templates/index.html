@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>원페이지 쇼핑몰</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Indie+Flower&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: 'Gamja Flower', cursive;
+        }
+
+        img {
+            width: 400px;
+            height: 400px;
+        }
+
+        h1 {
+            display: inline;
+        }
+
+        small {
+            font-size: 25px;
+        }
+
+        div {
+            display: block;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        p {
+            font-size: 14px;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        #input {
+            width: 600px;
+            display: inline-block;
+            margin-left: 450px;
+        }
+
+        button {
+            margin-bottom: 200px;
+        }
+
+        span {
+            font-style: bold;
+        }
+
+        input {
+            margin-top: 20px;
+        }
+
+        #usd {
+            color: blue;
+            font-family: 'Gamja Flower', cursive;
+            font-size: 25px;
+        }
+    </style>
+
+    <script>
+
+        function usd_info() {
+            $.ajax({
+                type: "GET",
+                url: "https://api.manana.kr/exchange/rate.json",
+                data: {},
+                success: function (response) {
+                    let usd_code = response[1]["rate"];
+                    let usd = `달러.원 환율:${usd_code}`
+                    $('#usd').text(usd);
+                }
+            })
+        }
+
+
+
+
+        function order_box() {
+            let name = $('#user-name').val();
+            let num = $('#item-num').val();
+            let addr = $('#user-addr').val();
+            let tel = $('#user-tel').val();
+
+            let order_list = [
+                {
+                    "value": name,
+                    "label": "이름"
+                },
+                {
+                    "value": num,
+                    "label": "수량"
+                },
+                {
+                    "value": addr,
+                    "label": "주소"
+                },
+                {
+                    "value": tel,
+                    "label": "번호"
+                }
+            ];
+            for (let i = 0; i < order_list.length; i++) {
+                let value = order_list[i]['value'];
+                let label = order_list[i]['label'];
+                if (value == '') {
+                    alert(`${label}을 입력해주세요!`);
+                }
+            }
+            $.ajax({
+                type: "POST",
+                url: "/order",
+                data: {
+                    'name_give': name,
+                    'number_give': num,
+                    'address_give': addr,
+                    'phone_give': tel
+                },
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert(response['msg']);
+                        window.location.reload();
+                    }
+                }
+            })
+
+
+
+        }
+
+        $(document).ready(function () {
+            $('#order-confirm').html("");
+            usd_info();
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/order",
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let order_db = response['order'];
+                        console.log(order_db);
+                        for (let i = 0; i < order_db.length; i++) {
+                            order_confirm(order_db[i]['name'], order_db[i]['number'], order_db[i]['addr'], order_db['phone'])
+                        }
+                    }
+                }
+            })
+        }
+
+
+        function order_confirm(name, number, addr, phone) {
+            check_order = `<tr>
+                <td scope="row">${name}</td>
+                <td>${number}</td>
+                <td>${addr}</td>
+                <td>${phone}</td>
+            </tr>`
+            $('#order-confirm').append(check_order);
+
+        }
+
+
+
+
+
+        function usd_info() {
+            $.ajax({
+                type: "GET",
+                url: "https://api.manana.kr/exchange/rate.json",
+                data: {},
+                success: function (response) {
+                    let usd_code = response[1]["rate"];
+                    let usd = `달러.원 환율:${usd_code}`
+                    $('#usd').text(usd);
+                }
+            })
+        }
+
+
+        function open_img() {
+            if ($('#openimg').css('display') == 'none') {
+                $('#button').text('이미지 닫기');
+                $('#openimg').show();
+            }
+            else {
+                $('#button').text('이미지 열기');
+                $('#openimg').hide();
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="image">
+
+        <img id="openimg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQ-2yOAlxM_Mj5JUXLPjkxNX7wyvzpnVtOscfxaZoqPOWPXgU7h&usqp=CAU" /></a>
+    </div>
+    <div>
+        <button id="button" type="submit" onclick="open_img()">이미지 닫기</button>
+    </div>
+    <div class="title">
+        <h1>벤자민 고무나무 </h1>
+        <small>가격: 90,000원/개</small>
+        <br>
+        <p><strong>소개:</strong> 뛰어난 공기정화효과를 가지고 있고, 실내 미세먼지를 흡수하는 능력 뿐만 아니라 <abbr title="질소와 수소로 이루어진 화합물">암모니아</abbr>,
+            <abbr title="유기화합물의 일종이다. 가장 간단한 알데히드이다. 메탄알이라고도 한다.">포름알데히드</abbr>, <abbr
+                title="유독성 기체이며 화산 활동이나 유기 물질이 분해될 때 자연적으로 생긴다. ">아황산가스</abbr> 제거 등에도 탁월한 효과를 보입니다.</p>
+        <p><strong>관리:</strong> 너무 지나치게 뻗은 가지는 잘라주고, 적당량의 햇빛을 받을 수 있는 곳에 둬야하며 겉흙이 완전히 말랐을 때 충분한 물을 줍니다.</p>
+    </div>
+    <div>
+        <p id="usd"> </p>
+    </div>
+    <div id="input">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">주문자 이름</span>
+            </div>
+            <input type="text" class="form-control" id="user-name" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">수량</span>
+            </div>
+            <input type="number" id="item-num" class="form-control" min="1" max="5" value="" placeholder="--수량을 선택하세요--"
+                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">주소</span>
+            </div>
+            <input type="text" id="user-addr" class="form-control" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">전화번호</span>
+            </div>
+            <input type="tel" id="user-tel" class="form-control" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default">
+        </div>
+        <button type="button" class="btn btn-warning" onclick="order_box()">주문하기</button>
+    </div>
+    <table class="table" style="width:70%; margin:auto">
+        <thead>
+            <tr>
+                <th scope="col">이름</th>
+                <th scope="col">수량</th>
+                <th scope="col">주소</th>
+                <th scope="col">전화번호</th>
+            </tr>
+        </thead>
+        <tbody id="order-confirm">
+            <tr>
+                <td scope="row">Mark</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
